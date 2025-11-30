@@ -63,7 +63,7 @@ demo/*.jar
 demo/*.war
 
 # Environment / credentials
-demo/src/main/resources/application.properties
+# demo/src/main/resources/application.properties  # Comentado para permitir subir versión con variables de entorno
 .env
 .env.*
 *.pem
