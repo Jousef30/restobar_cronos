@@ -1,74 +1,73 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.Usuario;
-import com.example.demo.repository.UsuarioRepository;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import com.example.demo.Service.UsuarioService;
 
 import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/usuarios")
-@CrossOrigin(origins = "http://localhost:4200") // ajuste en dev
 public class UsuarioController {
 
-    private final UsuarioRepository repo;
-    private final BCryptPasswordEncoder passwordEncoder;
+    @Autowired
+    private UsuarioService usuarioService;
 
-    public UsuarioController(UsuarioRepository repo, BCryptPasswordEncoder passwordEncoder) {
-        this.repo = repo;
-        this.passwordEncoder = passwordEncoder;
-    }
-
-    @GetMapping
-    public List<Usuario> listar() {
-        return repo.findAll();
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Usuario> obtener(@PathVariable Long id) {
-        return repo.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
-    }
-
-    @PostMapping
-    public ResponseEntity<?> crear(@RequestBody Usuario u) {
-        // validar email único
-        if (repo.findByEmail(u.getEmail()).isPresent()) {
-            return ResponseEntity.status(409).body("El email ya está registrado");
+    // Endpoint para crear un usuario
+    @PostMapping("/crear")
+    public Usuario crearUsuario(@RequestBody Usuario usuario) {
+        if (usuario.getFechaRegistro() == null) {
+            usuario.setFechaRegistro(new java.sql.Timestamp(System.currentTimeMillis()));
         }
-        // encriptar contraseña
-        u.setPassword(passwordEncoder.encode(u.getPassword()));
-        Usuario saved = repo.save(u);
-        return ResponseEntity.ok(saved);
+        return usuarioService.crearUsuario(usuario);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> actualizar(@PathVariable Long id, @RequestBody Usuario datos) {
-        return repo.findById(id).map(u -> {
-            u.setNombre_completo(datos.getNombre_completo());
-            u.setTelefono(datos.getTelefono());
-            // si cambia el email, validar unicidad
-            if (!u.getEmail().equals(datos.getEmail())) {
-                if (repo.findByEmail(datos.getEmail()).isPresent()) {
-                    return ResponseEntity.status(409).body("El email ya está en uso");
-                }
-                u.setEmail(datos.getEmail());
-            }
-            // si envían password nuevo (no vacío), encriptar y actualizar
-            if (datos.getPassword() != null && !datos.getPassword().isBlank()) {
-                u.setPassword(passwordEncoder.encode(datos.getPassword()));
-            }
-            u.setRol(datos.getRol());
-            Usuario saved = repo.save(u);
-            return ResponseEntity.ok(saved);
-        }).orElse(ResponseEntity.notFound().build());
+    // Endpoint para obtener usuario por email
+    @GetMapping("/buscar/{email}")
+    public Usuario getUsuarioPorEmail(@PathVariable String email) {
+        return usuarioService.getUsuarioPorEmail(email).orElse(null);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
-        if (!repo.existsById(id)) return ResponseEntity.notFound().build();
-        repo.deleteById(id);
-        return ResponseEntity.noContent().build();
+    @GetMapping("/listar")
+    public List<Usuario> getAllUsuarios() {
+        return usuarioService.getAllUsuarios();
     }
+
+    @PutMapping("/actualizar/{id}")
+    public ResponseEntity<Usuario> actualizarUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
+        Optional<Usuario> usuarioExistente = usuarioService.getUsuarioPorId(id);
+
+        if (usuarioExistente.isPresent()) {
+            Usuario usuarioActualizado = usuarioExistente.get();
+            usuarioActualizado.setNombreCompleto(usuario.getNombreCompleto());
+            usuarioActualizado.setEmail(usuario.getEmail());
+            usuarioActualizado.setPassword(usuario.getPassword());
+            usuarioActualizado.setTelefono(usuario.getTelefono());
+            usuarioActualizado.setRol(usuario.getRol());
+
+            Usuario updatedUser = usuarioService.crearUsuario(usuarioActualizado);
+
+            return ResponseEntity.ok(updatedUser);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
+    @DeleteMapping("/eliminar/{id}")
+    public ResponseEntity<String> eliminarUsuario(@PathVariable Long id) {
+        Optional<Usuario> usuarioExistente = usuarioService.getUsuarioPorId(id);
+
+        if (usuarioExistente.isPresent()) {
+            usuarioService.eliminarUsuario(id);
+            return ResponseEntity.ok("Usuario eliminado exitosamente.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado.");
+        }
+    }
+
 }
