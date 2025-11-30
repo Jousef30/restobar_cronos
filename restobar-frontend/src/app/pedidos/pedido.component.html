@@ -1,0 +1,100 @@
+<div class="container">
+  <h2 class="titulo">Gestión de Pedidos</h2>
+
+  <!-- BOTÓN NUEVO - Mozo y Admin pueden crear -->
+  <button class="btn btn-primary" (click)="abrirModal()">
+    + Nuevo Pedido
+  </button>
+
+  <hr>
+
+  <table class="tabla">
+    <thead>
+      <tr>
+        <th>Mesa</th>
+        <th>Usuario</th>
+        <th>Total</th>
+        <th>Estado</th>
+        <th>Fecha</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let p of pedidos">
+        <td>{{ p.mesa?.numero_mesa || 'WEB' }}</td>
+        <td>{{ p.usuario?.nombreCompleto }}</td>
+        <td>S/. {{ p.total }}</td>
+
+        <!-- ADMIN: Solo texto -->
+        <td *ngIf="rol === 'ROLE_ADMIN'">
+          <span class="badge" [ngClass]="p.estado.toLowerCase()">
+            {{ p.estado }}
+          </span>
+        </td>
+
+        <!-- MOZO: Selector para cambiar estado -->
+        <td *ngIf="rol === 'ROLE_MOZO'">
+          <select [(ngModel)]="p.estado" (ngModelChange)="cambiarEstado(p, $event)" class="select-estado">
+            <option *ngFor="let e of estados" [value]="e">{{ e }}</option>
+          </select>
+        </td>
+
+        <td>{{ p.fecha | date:'yyyy-MM-dd HH:mm' }}</td>
+
+        <!-- ADMIN: Botones completos -->
+        <td *ngIf="rol === 'ROLE_ADMIN'">
+          <button class="btn btn-edit" (click)="editar(p)">Editar</button>
+          <button class="btn btn-delete" (click)="eliminar(p)">Eliminar</button>
+        </td>
+
+        <!-- MOZO: Sin acciones (cambiar estado arriba) -->
+        <td *ngIf="rol === 'ROLE_MOZO'">
+          <span class="texto-info">Cambiar estado arriba ↑</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- MODAL -->
+<div class="modal" *ngIf="modalVisible">
+  <div class="modal-content">
+
+    <h3>{{ editando ? 'Editar Pedido' : 'Nuevo Pedido' }}</h3>
+
+    <label>Mesa:</label>
+    <select [(ngModel)]="pedido.mesa.id_mesa">
+      <option *ngFor="let m of mesas" [value]="m.id_mesa">
+        Mesa {{ m.numero_mesa }} ({{ m.estado }})
+      </option>
+    </select>
+
+    <label>Usuario:</label>
+    <select [(ngModel)]="pedido.usuario.idUsuario">
+      <option *ngFor="let u of usuarios" [value]="u.idUsuario">
+        {{ u.nombreCompleto }}
+      </option>
+    </select>
+
+    <label>Total:</label>
+    <input type="number" [(ngModel)]="pedido.total" placeholder="Total">
+
+    <label>Estado:</label>
+    <select [(ngModel)]="pedido.estado">
+      <option *ngFor="let e of estados" [value]="e">
+        {{ e }}
+      </option>
+    </select>
+
+    <div class="modal-buttons">
+      <button class="btn btn-primary" (click)="guardar()">
+        {{ editando ? 'Actualizar' : 'Guardar' }}
+      </button>
+
+      <button class="btn btn-secondary" (click)="cerrarModal()">
+        Cancelar
+      </button>
+    </div>
+  </div>
+</div>

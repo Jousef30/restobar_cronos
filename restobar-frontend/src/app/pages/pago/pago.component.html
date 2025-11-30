@@ -1,0 +1,72 @@
+<div class="pago-container">
+    <div class="pago-header">
+        <h2><i class="fa-solid fa-credit-card"></i> Pasarela de Pago - Mercado Pago</h2>
+        <a routerLink="/carrito" class="btn-volver">
+            <i class="fa-solid fa-arrow-left"></i> Volver al Carrito
+        </a>
+    </div>
+
+    <div class="pago-content">
+        <!-- Formulario de Mercado Pago -->
+        <div class="formulario-section">
+            <div class="payment-card">
+                <h3><i class="fa-brands fa-cc-visa"></i> Pago con Tarjeta</h3>
+                <p class="subtitle">Ingresa los datos de tu tarjeta de crédito o débito</p>
+
+                <!-- Contenedor del Brick de Mercado Pago -->
+                <div id="cardPaymentBrick_container"></div>
+
+                <!-- Indicador de carga mientras se procesa -->
+                <div *ngIf="procesando" class="procesando-overlay">
+                    <div class="spinner"></div>
+                    <p>Procesando pago...</p>
+                </div>
+
+                <!-- Información de seguridad -->
+                <div class="seguridad-info">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    Pago seguro encriptado con Mercado Pago
+                </div>
+
+                <!-- Tarjetas de prueba (solo para desarrollo) -->
+                <div class="test-cards-info">
+                    <p><strong>Tarjetas de prueba:</strong></p>
+                    <small>
+                        ✅ Visa: 4509 9535 6623 3704 (Aprobada)<br>
+                        ❌ Master: 5031 7557 3453 0604 (Rechazada)
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resumen del Pedido -->
+        <div class="resumen-section">
+            <div class="resumen-card">
+                <h3>Resumen del Pedido</h3>
+
+                <div class="productos-resumen">
+                    <div class="producto-mini" *ngFor="let item of items">
+                        <img [src]="item.imagen ? 'http://localhost:8080' + item.imagen : 'assets/placeholder.jpg'"
+                            [alt]="item.nombre">
+                        <div class="info">
+                            <p class="nombre">{{ item.nombre }}</p>
+                            <p class="cantidad">x{{ item.cantidad }}</p>
+                        </div>
+                        <p class="precio">S/. {{ (item.precio * item.cantidad).toFixed(2) }}</p>
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="total-final">
+                    <span>Total a Pagar</span>
+                    <span class="monto">S/. {{ total.toFixed(2) }}</span>
+                </div>
+
+                <div class="mercadopago-badge">
+                    <img src="https://imgmp.mlstatic.com/org-img/banners/ar/medios/575X40.jpg" alt="Mercado Pago" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

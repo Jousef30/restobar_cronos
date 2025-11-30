@@ -1,0 +1,125 @@
+
+.titulo-gestion {
+  font-size: 26px;
+  margin-bottom: 20px;
+  font-weight: 700;
+}
+
+// TABLA
+.tabla {
+  width: 95%;
+  margin-top: 20px;
+  border-collapse: collapse;
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+
+  th {
+    background: #222;
+    color: #ffffff;
+    padding: 14px;
+    font-size: 15px;
+    text-align: left;
+  }
+
+  td {
+    padding: 12px;
+    border-bottom: 1px solid #dcdcdc;
+  }
+
+  tr:hover {
+    background: #f5f7fa;
+  }
+}
+
+//BOTONES
+button {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s ease all;
+
+  &.btn-primary {
+    background: #28a745;
+    color: #ffffff;
+
+    &:hover {
+      background: #28a745;
+    }
+  }
+
+  &.btn-warning {
+    background: #f1c40f;
+    color: #ffffff;
+
+    &:hover {
+      background: #f1c40f;
+    }
+  }
+
+  &.btn-danger {
+    background: #e74c3c;
+    color: #ffffff;
+
+    &:hover {
+      background: #e74c3c;
+    }
+  }
+}
+
+//MODAL
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: #ffffff;
+  width: 380px;
+  padding: 25px;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  animation: fadeIn .25s ease-in-out;
+
+  h3 {
+    text-align: center;
+    margin-bottom: 18px;
+    color: #28a745;
+  }
+
+  input,
+  select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 14px;
+    border: 1px solid #dcdcdc;
+    border-radius: 8px;
+  }
+
+  .modal-buttons {
+    display: flex;
+    justify-content: space-between;
+  }
+}
+
+// ANIMACIÓN
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {  
+    opacity: 1;
+    transform: scale(1);
+  }
+}

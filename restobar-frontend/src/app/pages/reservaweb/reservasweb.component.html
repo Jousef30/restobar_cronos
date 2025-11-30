@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reservas - Restobar Kronos</title>
+  <link rel="stylesheet" href="./reservasweb.component.scss" />
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="logo">
+      <img src="logo/logo.jpeg" alt="Kronos Logo" />
+    </div>
+
+    <nav class="menu">
+      <a routerLink="/">Inicio</a>
+      <a routerLink="/promosweb">Promociones</a>
+      <a routerLink="/reservaweb">Reserva</a>
+
+      <!-- Si está logueado -->
+      <span *ngIf="usuarioLogueado" style="display: flex; align-items: center; gap: 10px;">
+        <span style="color: #fff;">Hola, {{ usuarioLogueado.nombreCompleto }}</span>
+        <a (click)="cerrarSesion()" style="cursor: pointer;" title="Cerrar sesión">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        </a>
+      </span>
+
+      <!-- Si NO está logueado -->
+      <a *ngIf="!usuarioLogueado" routerLink="/login"><i class="fa-solid fa-user"></i></a>
+    </nav>
+  </header>
+
+  <!-- RESERVAS -->
+  <section class="reserva-section">
+
+    <h2>Reservar Mesa</h2>
+
+    <!-- Estado de Mesas en tiempo real -->
+    <div class="mesas-grid">
+
+      <div class="mesa-card" *ngFor="let m of mesas" [class.ocupada]="m.estado === 'RESERVADA'"
+        (click)="seleccionarMesa(m)">
+        <h3>Mesa {{ m.numero_mesa }}</h3>
+        <p [class.libre]="m.estado === 'LIBRE'">
+          {{ m.estado === 'LIBRE' ? 'Disponible' : 'Reservada' }}
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Modal de Reserva -->
+    <div class="modal" *ngIf="modalVisible">
+      <div class="modal-content">
+
+        <h3>Reservar Mesa {{ mesaSeleccionada?.numero_mesa }}</h3>
+
+        <div class="inputs">
+
+          <!-- Usuario -->
+          <div *ngIf="!usuarioLogueado" class="login-msg">
+            <p>Para reservar debes iniciar sesión.</p>
+            <button routerLink="/login" class="btn-login">Iniciar Sesión</button>
+            <p style="margin-top: 10px; color: #fff;">¿No tienes cuenta?
+              <a routerLink="/registro" style="color: #f39c12; text-decoration: underline; cursor: pointer;">Regístrate
+                aquí</a>
+            </p>
+          </div>
+
+          <div *ngIf="usuarioLogueado">
+            <input type="date" [(ngModel)]="fecha" />
+            <input type="time" [(ngModel)]="hora" />
+          </div>
+
+        </div>
+
+        <div class="btns" *ngIf="usuarioLogueado">
+          <button class="btn-reservar" (click)="reservar()">Confirmar Reserva</button>
+          <button class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+        </div>
+
+      </div>
+    </div>
+
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>2025 © Todos los derechos reservados - Restobar Kronos</p>
+  </footer>
+
+</body>
+
+</html>

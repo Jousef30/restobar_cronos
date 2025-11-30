@@ -1,0 +1,61 @@
+<div class="carrito-container">
+    <div class="carrito-header">
+        <h2><i class="fa-solid fa-basket-shopping"></i> Mi Carrito</h2>
+        <a routerLink="/carta" class="btn-volver">
+            <i class="fa-solid fa-arrow-left"></i> Volver a la Carta
+        </a>
+    </div>
+
+    <div *ngIf="items.length === 0" class="empty">
+        <i class="fa-solid fa-cart-shopping"></i>
+        <p>Tu carrito está vacío</p>
+        <a routerLink="/carta" class="btn-carta">Explorar Productos</a>
+    </div>
+
+    <div *ngIf="items.length > 0" class="carrito-content">
+        <div class="items-section">
+            <div class="item-card" *ngFor="let item of items">
+                <img [src]="item.imagen ? 'http://localhost:8080' + item.imagen : 'assets/placeholder.jpg'"
+                    [alt]="item.nombre">
+                <div class="item-info">
+                    <h3>{{ item.nombre }}</h3>
+                    <p class="descripcion">{{ item.descripcion }}</p>
+                    <p class="categoria">{{ item.categoria?.nombreCategoria }}</p>
+                </div>
+                <div class="item-details">
+                    <p class="precio-unitario">S/. {{ item.precio }}</p>
+                    <p class="cantidad">x {{ item.cantidad }}</p>
+                    <p class="subtotal">S/. {{ (item.precio * item.cantidad).toFixed(2) }}</p>
+                </div>
+                <button class="btn-eliminar" (click)="quitar(item.id_producto)">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="summary-section">
+            <div class="summary-card">
+                <h3>Resumen del Pedido</h3>
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span>S/. {{ total.toFixed(2) }}</span>
+                </div>
+                <div class="summary-row">
+                    <span>Descuento</span>
+                    <span class="discount">- S/. 0.00</span>
+                </div>
+                <hr>
+                <div class="summary-row total-row">
+                    <span>Total</span>
+                    <span>S/. {{ total.toFixed(2) }}</span>
+                </div>
+                <button class="btn-proceder" (click)="procederAlPago()">
+                    <i class="fa-solid fa-credit-card"></i> Proceder al Pago
+                </button>
+                <button class="btn-seguir" routerLink="/carta">
+                    <i class="fa-solid fa-plus"></i> Agregar Más Productos
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

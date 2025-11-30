@@ -1,0 +1,70 @@
+<h2 class="titulo">Gestión de Productos</h2>
+
+<!-- BOTÓN NUEVO -->
+<button class="btn-nuevo" (click)="abrirModal()">+ Nuevo Producto</button>
+
+<hr>
+
+<table class="tabla">
+  <tr>
+    <th>Imagen</th>
+    <th>Nombre</th>
+    <th>Descripción</th>
+    <th>Precio</th>
+    <th>Stock</th>
+    <th>Categoría</th>
+    <th>Acciones</th>
+  </tr>
+
+  <tr *ngFor="let p of productos">
+    <td>
+      <img *ngIf="p.imagen" [src]="'http://localhost:8080' + p.imagen" width="100">
+      <span *ngIf="!p.imagen" style="color: #999;">Sin imagen</span>
+    </td>
+    <td>{{ p.nombre }}</td>
+    <td>{{ p.descripcion }}</td>
+    <td>S/. {{ p.precio }}</td>
+    <td>{{ p.stock }}</td>
+    <td>{{ p.categoria?.nombre }}</td>
+
+    <td>
+      <button class="btn-editar" (click)="editar(p)">Editar</button>
+      <button class="btn-eliminar" (click)="eliminar(p.id_producto)">Eliminar</button>
+    </td>
+  </tr>
+</table>
+
+<!-- MODAL -->
+<div class="modal" *ngIf="modalVisible">
+  <div class="modal-content">
+
+    <h3>{{ editando ? "Editar Producto" : "Nuevo Producto" }}</h3>
+
+    <input type="text" placeholder="Nombre" [(ngModel)]="producto.nombre">
+    <input type="text" placeholder="Descripción" [(ngModel)]="producto.descripcion">
+    <input type="number" placeholder="Precio" [(ngModel)]="producto.precio">
+    <input type="number" placeholder="Stock" [(ngModel)]="producto.stock">
+
+    <select [(ngModel)]="producto.id_categoria">
+      <option value="">-- Seleccione Categoría --</option>
+      <option *ngFor="let c of categorias" [value]="c.id_categoria">
+        {{ c.nombre }}
+      </option>
+    </select>
+
+    <!-- SUBIDA DE IMAGEN (IGUAL QUE PROMOCIONES) -->
+    <label>Seleccionar imagen:</label>
+    <input type="file" accept="image/*" (change)="seleccionarImagen($event)">
+
+    <!-- Preview de imagen actual -->
+    <img *ngIf="producto.imagen" [src]="'http://localhost:8080' + producto.imagen" width="120">
+
+    <div class="btns">
+      <button class="btn-guardar" (click)="guardar()">
+        {{ editando ? "Actualizar" : "Guardar" }}
+      </button>
+      <button class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+    </div>
+
+  </div>
+</div>

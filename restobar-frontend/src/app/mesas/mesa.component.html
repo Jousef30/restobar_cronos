@@ -1,0 +1,65 @@
+<h2 class="titulo">Gestión de Mesas</h2>
+
+<!-- BOTÓN NUEVO - SOLO ADMIN -->
+<button class="btn-nuevo" (click)="abrirModal()" *ngIf="rol === 'ROLE_ADMIN'">+ Nueva Mesa</button>
+
+<hr>
+
+<table class="tabla">
+  <tr>
+    <th>Número</th>
+    <th>Capacidad</th>
+    <th>Estado</th>
+    <th>Acciones</th>
+  </tr>
+
+  <tr *ngFor="let m of mesas">
+    <td>{{ m.numero_mesa }}</td>
+    <td>{{ m.capacidad }}</td>
+
+    <!-- ADMIN: Solo texto -->
+    <td *ngIf="rol === 'ROLE_ADMIN'">{{ m.estado }}</td>
+
+    <!-- MOZO: Selector para cambiar estado -->
+    <td *ngIf="rol === 'ROLE_MOZO'">
+      <select [(ngModel)]="m.estado" (ngModelChange)="cambiarEstado(m, $event)" class="select-estado">
+        <option *ngFor="let e of estados" [value]="e">{{ e }}</option>
+      </select>
+    </td>
+
+    <!-- ADMIN: Botones de editar y eliminar -->
+    <td *ngIf="rol === 'ROLE_ADMIN'">
+      <button class="btn-editar" (click)="editar(m)">Editar</button>
+      <button class="btn-eliminar" (click)="eliminar(m.id_mesa)">Eliminar</button>
+    </td>
+
+    <!-- MOZO: Sin acciones -->
+    <td *ngIf="rol === 'ROLE_MOZO'">
+      <span class="texto-info">Cambiar estado arriba ↑</span>
+    </td>
+  </tr>
+</table>
+
+<!-- MODAL - SOLO ADMIN -->
+<div class="modal" *ngIf="modalVisible && rol === 'ROLE_ADMIN'">
+  <div class="modal-content">
+
+    <h3>{{ editando ? "Editar Mesa" : "Nueva Mesa" }}</h3>
+
+    <input type="number" placeholder="Número de mesa" [(ngModel)]="mesa.numero_mesa">
+    <input type="number" placeholder="Capacidad" [(ngModel)]="mesa.capacidad">
+
+    <select [(ngModel)]="mesa.estado">
+      <option *ngFor="let e of estados" [value]="e">{{ e }}</option>
+    </select>
+
+    <div class="btns">
+      <button class="btn-guardar" (click)="guardar()">
+        {{ editando ? "Actualizar" : "Guardar" }}
+      </button>
+
+      <button class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+    </div>
+
+  </div>
+</div>

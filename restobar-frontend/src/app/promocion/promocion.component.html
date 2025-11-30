@@ -1,0 +1,61 @@
+<h2>Gestión de Promociones</h2>
+
+<button class="btn-primary" (click)="abrirModal()">Nueva Promoción</button>
+
+<hr>
+
+<table border="1" width="90%">
+  <tr>
+    <th>ID</th>
+    <th>Imagen</th>
+    <th>Título</th>
+    <th>Descripción</th>
+    <th>Estado</th>
+    <th>Acciones</th>
+  </tr>
+
+  <tr *ngFor="let p of promociones">
+    <td>{{ p.id_carrusel }}</td>
+
+    <td>
+      <img *ngIf="p.imagen" [src]="'http://localhost:8080' + p.imagen" width="100">
+      <span *ngIf="!p.imagen">Sin imagen</span>
+    </td>
+
+    <td>{{ p.titulo }}</td>
+    <td>{{ p.descripcion }}</td>
+    <td>{{ p.estado }}</td>
+
+    <td>
+      <button class="btn-warning" (click)="editar(p)">Editar</button>
+      <button class="btn-danger" (click)="eliminar(p)">Eliminar</button>
+
+    </td>
+  </tr>
+</table>
+
+
+<!-- MODAL -->
+<div class="modal" *ngIf="modalVisible">
+  <div class="modal-content">
+
+    <h3>{{ editando ? 'Editar Promoción' : 'Nueva Promoción' }}</h3>
+
+    <input type="text" [(ngModel)]="promocion.titulo" placeholder="Título">
+    <input type="text" [(ngModel)]="promocion.descripcion" placeholder="Descripción">
+
+    <!-- Seleccionar imagen -->
+    <input type="file" (change)="seleccionarImagen($event)">
+
+    <!-- Vista previa si ya existe -->
+    <img *ngIf="promocion.imagen" [src]="'http://localhost:8080' + promocion.imagen" width="120">
+
+    <select [(ngModel)]="promocion.estado">
+      <option *ngFor="let e of estados" [value]="e">{{ e }}</option>
+    </select>
+
+    <button (click)="guardar()">{{ editando ? 'Actualizar' : 'Guardar' }}</button>
+    <button (click)="cerrarModal()">Cancelar</button>
+
+  </div>
+</div>

@@ -1,0 +1,78 @@
+<div class="titulo-contenedor">
+  <h2>Gestión de Detalles de Pedido</h2>
+  <!-- Mozo y Admin pueden crear -->
+  <button class="btn-nuevo" (click)="abrirModal()">Nuevo Detalle</button>
+</div>
+
+<table class="tabla">
+  <thead>
+    <tr>
+      <th>Pedido</th>
+      <th>Producto</th>
+      <th>Cantidad</th>
+      <th>Precio</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr *ngFor="let d of detalles">
+      <td>#{{ d.pedido?.id_pedido }}</td>
+      <td>{{ d.producto?.nombre }}</td>
+      <td>{{ d.cantidad }}</td>
+      <td>S/{{ d.precio }}</td>
+
+      <!-- ADMIN: Puede editar y eliminar -->
+      <td *ngIf="rol === 'ROLE_ADMIN'">
+        <button class="btn-editar" (click)="editar(d)">Editar</button>
+        <button class="btn-eliminar" (click)="eliminar(d)">Eliminar</button>
+      </td>
+
+      <!-- MOZO: Solo puede editar (cantidad), NO eliminar -->
+      <td *ngIf="rol === 'ROLE_MOZO'">
+        <button class="btn-editar" (click)="editar(d)">Editar Cantidad</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- MODAL -->
+<div class="modal" *ngIf="modalVisible">
+  <div class="modal-content">
+
+    <h3>{{ editando ? 'Editar Detalle' : 'Nuevo Detalle' }}</h3>
+
+    <label>Pedido:</label>
+    <select [(ngModel)]="detalle.pedido.id_pedido">
+      <option value="">Seleccione</option>
+      <option *ngFor="let p of pedidos" [value]="p.id_pedido">
+        Pedido #{{ p.id_pedido }}
+      </option>
+    </select>
+
+    <label>Producto:</label>
+    <select [(ngModel)]="detalle.producto.id_producto" (change)="productoSeleccionado($event)">
+      <option value="">Seleccione</option>
+      <option *ngFor="let pr of productos" [value]="pr.id_producto">
+        {{ pr.nombre }} - S/{{ pr.precio }}
+      </option>
+    </select>
+
+    <label>Cantidad:</label>
+    <input type="number" min="1" [(ngModel)]="detalle.cantidad" (input)="calcularSubtotal()">
+
+    <label>Precio:</label>
+    <input type="text" [(ngModel)]="detalle.precio" readonly>
+
+    <label>Subtotal:</label>
+    <input type="text" [(ngModel)]="detalle.subtotal" readonly>
+
+    <div class="acciones">
+      <button class="btn btn-primary" (click)="guardar()">
+        {{ editando ? 'Actualizar' : 'Guardar' }}
+      </button>
+      <button class="btn btn-cancel" (click)="cerrarModal()">Cancelar</button>
+    </div>
+
+  </div>
+</div>

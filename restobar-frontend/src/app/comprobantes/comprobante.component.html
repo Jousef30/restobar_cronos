@@ -1,0 +1,123 @@
+<h2 class="titulo">Gestión de Comprobantes</h2>
+
+<!-- Mozo y Admin pueden crear -->
+<button class="btn-nuevo" (click)="abrirModal()">+ Nuevo Comprobante</button>
+
+<hr />
+
+<table class="tabla">
+  <tr>
+    <th>Pedido</th>
+    <th>Tipo</th>
+    <th>Monto Total</th>
+    <th>Fecha</th>
+    <th>Acciones</th>
+  </tr>
+
+  <tr *ngFor="let c of comprobantes">
+    <td>Pedido #{{ c.pedido?.id_pedido }}</td>
+    <td>{{ c.tipo }}</td>
+    <td>S/. {{ c.total || c.pedido?.total }}</td>
+    <td>{{ c.fecha | date:'yyyy-MM-dd' }}</td>
+
+    <!-- ADMIN: Botones completos + Imprimir -->
+    <td *ngIf="rol === 'ROLE_ADMIN'">
+      <button class="btn-imprimir" (click)="imprimirBoleta(c)">🖨️ Imprimir</button>
+      <button class="btn-editar" (click)="editar(c)">Editar</button>
+      <button class="btn-eliminar" (click)="eliminar(c)">Eliminar</button>
+    </td>
+
+    <!-- MOZO: Solo puede imprimir -->
+    <td *ngIf="rol === 'ROLE_MOZO'">
+      <button class="btn-imprimir" (click)="imprimirBoleta(c)">🖨️ Imprimir</button>
+    </td>
+  </tr>
+</table>
+
+<!-- MODAL DE CREACIÓN/EDICIÓN -->
+<div class="modal" *ngIf="modalVisible">
+  <div class="modal-content">
+    <h3>{{ editando ? 'Editar Comprobante' : 'Nuevo Comprobante' }}</h3>
+
+    <label>Pedido</label>
+    <select [(ngModel)]="comprobante.pedido.id_pedido" (change)="pedidoSeleccionado($event)">
+      <option value="">-- Seleccione Pedido --</option>
+      <option *ngFor="let p of pedidos" [value]="p.id_pedido">
+        Pedido #{{ p.id_pedido }} (Total: S/. {{ p.total }})
+      </option>
+    </select>
+
+    <label>Tipo</label>
+    <select [(ngModel)]="comprobante.tipo">
+      <option *ngFor="let t of tipos" [value]="t">{{ t }}</option>
+    </select>
+
+    <label>Monto Total</label>
+    <input type="text" [(ngModel)]="comprobante.total" readonly>
+
+    <div class="btns">
+      <button class="btn-guardar" (click)="guardar()">
+        {{ editando ? 'Actualizar' : 'Guardar' }}
+      </button>
+      <button class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DE BOLETA PARA IMPRIMIR -->
+<div class="modal-boleta" *ngIf="boletaVisible" id="boleta-container">
+  <div class="boleta-overlay">
+    <button class="btn-cerrar-boleta no-print" (click)="cerrarBoleta()">✖ Cerrar</button>
+
+    <div class="boleta" id="boleta-imprimir">
+      <div class="header-boleta">
+        <h1>RESTOBAR KRONOS</h1>
+        <p>RUC: 20XXXXXXXXX</p>
+        <p>Av. Principal 123, Lima - Perú</p>
+        <p>Tel: (01) 123-4567</p>
+      </div>
+
+      <div class="tipo-boleta">
+        <h2>{{ boletaActual?.tipo || 'BOLETA' }} DE VENTA</h2>
+        <p>N° {{ boletaActual?.id_comprobante | number:'3.0-0' }}</p>
+      </div>
+
+      <div class="info-cliente">
+        <p><strong>FECHA EMISIÓN:</strong> {{ boletaActual?.fecha | date:'dd/MM/yyyy' }}</p>
+        <p><strong>CLIENTE:</strong> {{ boletaActual?.pedido?.usuario?.nombreCompleto || 'PÚBLICO EN GENERAL' }}</p>
+      </div>
+
+      <table class="tabla-productos">
+        <thead>
+          <tr>
+            <th>CANT.</th>
+            <th>DESCRIPCIÓN</th>
+            <th>P/U</th>
+            <th>TOTAL</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let detalle of detallesPedido">
+            <td class="text-center">{{ detalle.cantidad }}</td>
+            <td>{{ detalle.producto?.nombre }}</td>
+            <td class="text-right">S/. {{ detalle.precio | number:'1.2-2' }}</td>
+            <td class="text-right">S/. {{ (detalle.cantidad * detalle.precio) | number:'1.2-2' }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="totales">
+        <p><strong>SUBTOTAL:</strong> S/. {{ calcularSubtotal() | number:'1.2-2' }}</p>
+        <p><strong>IGV (18%):</strong> S/. {{ calcularIGV() | number:'1.2-2' }}</p>
+        <p class="total-final"><strong>TOTAL:</strong> S/. {{ calcularTotalConIGV() | number:'1.2-2' }}</p>
+      </div>
+
+      <div class="footer-boleta">
+        <p>¡Gracias por su preferencia!</p>
+        <p>{{ fechaHoraActual | date:'dd/MM/yyyy HH:mm' }}</p>
+      </div>
+    </div>
+
+    <button class="btn-imprimir-final no-print" (click)="imprimir()">🖨️ Imprimir Boleta</button>
+  </div>
+</div>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Restobar Kronos</title>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <header class="navbar">
+        <div class="logo">
+            <img src="logo/logo.jpeg" alt="Kronos Logo">
+        </div>
+
+        <nav class="menu">
+            <a routerLink="/">Inicio</a>
+            <a routerLink="/promosweb">Promociones</a>
+            <a routerLink="/reservaweb">Reserva</a>
+            <a routerLink="/carta">Carta</a>
+
+            <a routerLink="/carrito" style="font-size: 20px;">
+                <i class="fa-solid fa-basket-shopping"></i>
+            </a>
+
+            <span *ngIf="usuarioLogueado" style="display: flex; align-items: center; gap: 10px;">
+                <span style="color: #fff;">Hola, {{ usuarioLogueado.nombreCompleto }}</span>
+                <a (click)="cerrarSesion()" style="cursor: pointer;" title="Cerrar sesión">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                </a>
+            </span>
+
+            <a *ngIf="!usuarioLogueado" routerLink="/login"><i class="fa-solid fa-user"></i></a>
+        </nav>
+    </header>
+
+    <!-- CARRUSEL -->
+    <section id="inicio" class="carrusel-section">
+        <div class="carrusel">
+            <div class="slide active"><img src="promociones1.jpeg"></div>
+            <div class="slide"><img src="promociones2.jpeg"></div>
+            <div class="slide"><img src="promociones3.jpeg"></div>
+            <button class="prev">❮</button>
+            <button class="next">❯</button>
+        </div>
+    </section>
+
+    <!-- MEJORES PLATOS -->
+    <section class="platos">
+        <h2>Los mejores platos</h2>
+        <div class="cards">
+            <div class="card">
+                <img src="hamburguesaclasica.jpg" alt="">
+                <h3>Hamburguesa Clasica</h3>
+                <p>Descripción breve del plato más pedido.</p>
+            </div>
+            <div class="card">
+                <img src="trioalitas2.jpeg" alt="">
+                <h3>Trío Alitas</h3>
+                <p>Perfecto para los amantes del mar.</p>
+            </div>
+            <div class="card">
+                <img src="brochetas_pollo.jpeg" alt="">
+                <h3>Brochetas Kronos</h3>
+                <p>Una explosión de sabor.</p>
+            </div>
+            <div class="card">
+                <img src="tequenos.jpeg" alt="">
+                <h3>Tequeños</h3>
+                <p>Clásico gigante para matar el hambre.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- UBÍCANOS -->
+    <section class="ubicacion" id="reserva">
+        <h2>Ubícanos</h2>
+        <div class="mapa">
+            <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12203.867830913108!2d-75.73634872496177!3d-14.077827046138129!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9110e2ec5f515db5%3A0x6fabc73b25a5aa2e!2sMegaPlaza%20Ica!5e0!3m2!1ses-419!2spe!4v1763293827778!5m2!1ses-419!2spe"
+                width="600" height="450" style="border:0;" allowfullscreen loading="lazy"></iframe>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>2025 © Todos los derechos reservados - Restobar Kronos</p>
+    </footer>
+
+    <script src="carrusel.js"></script>
+</body>
+
+</html>

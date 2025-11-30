@@ -1,0 +1,31 @@
+<div class="contenedor">
+
+  <div class="menu">
+    <h3>Restobar</h3>
+    <a routerLink="/dashboard/categorias" *ngIf="rol === 'ROLE_ADMIN'">Categorías</a>
+    <a routerLink="/dashboard/productos" *ngIf="rol === 'ROLE_ADMIN'">Productos</a>
+    <a routerLink="/dashboard/usuarios" *ngIf="rol === 'ROLE_ADMIN'">Usuarios</a>
+    <a routerLink="/dashboard/mesas" *ngIf="rol === 'ROLE_ADMIN'">Mesas</a>
+    <a routerLink="/dashboard/promociones" *ngIf="rol === 'ROLE_ADMIN'">Promociones</a>
+    <a routerLink="/dashboard/reservas" *ngIf="rol === 'ROLE_ADMIN'">Reservas</a>
+
+
+    <!-- ADMIN - MOZO -->
+    <a routerLink="/dashboard/mesas">Mesas</a>
+    <a routerLink="/dashboard/pedidos">Pedidos</a>
+    <a routerLink="/dashboard/comprobantes">Comprobantes</a>
+    <a routerLink="/dashboard/detallepedido">Detalle Pedido</a>
+
+
+    <button class="logout-btn" (click)="logout()">Cerrar sesión</button>
+
+  </div>
+
+  <div class="contenido">
+    <h2 *ngIf="mostrarBienvenida()">BIENVENIDO USUARIO</h2>
+
+    <router-outlet></router-outlet>
+  </div>
+
+
+</div>

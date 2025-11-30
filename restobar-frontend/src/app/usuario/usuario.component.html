@@ -1,0 +1,61 @@
+<h2 class="titulo-gestion">Gestión de Usuarios</h2>
+
+<button class="btn-primary" (click)="abrirModal()">Nuevo Usuario</button>
+
+<hr>
+
+<table class="tabla">
+  <tr>
+    <th>Nombre</th>
+    <th>Email</th>
+    <th>Teléfono</th>
+    <th>Rol</th>
+    <th>Acciones</th>
+  </tr>
+
+  <ng-container *ngFor="let u of usuarios">
+    <tr *ngIf="u.rol !== 'ROLE_CLIENTE'">
+      <td>{{ u.nombreCompleto }}</td>
+      <td>{{ u.email }}</td>
+      <td>{{ u.telefono }}</td>
+      <td>{{ u.rol }}</td>
+      <td>
+        <button class="btn-warning" (click)="editar(u)">Editar</button>
+        <button class="btn-danger" (click)="eliminar(u)">Eliminar</button>
+      </td>
+    </tr>
+  </ng-container>
+
+</table>
+
+<!-- MODAL -->
+<div class="modal" *ngIf="modalVisible">
+  <div class="modal-content">
+
+    <h3 class="modal-title">{{ editando ? 'Editar Usuario' : 'Nuevo Usuario' }}</h3>
+
+    <input type="text" [(ngModel)]="usuario.nombreCompleto" placeholder="Nombre completo">
+    <input type="email" [(ngModel)]="usuario.email" placeholder="Email">
+
+    <input type="password" [(ngModel)]="usuario.password" placeholder="Contraseña">
+
+    <input type="text" [(ngModel)]="usuario.telefono" placeholder="Teléfono">
+
+    <select [(ngModel)]="usuario.rol">
+      <ng-container *ngFor="let r of roles">
+        <option *ngIf="r !== 'ROLE_CLIENTE'" [value]="r">
+          {{ r }}
+        </option>
+      </ng-container>
+    </select>
+
+
+    <div class="modal-buttons">
+      <button class="btn-primary" (click)="guardar()">
+        {{ editando ? 'Actualizar' : 'Guardar' }}
+      </button>
+
+      <button class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
+    </div>
+  </div>
+</div>

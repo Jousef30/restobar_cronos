@@ -1,0 +1,108 @@
+.container {
+  width: 95%;
+  margin: 20px auto;
+}
+
+.titulo {
+  font-size: 26px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.btn {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: #28a745;
+  color: white;
+}
+
+.btn-edit {
+  background: #ffc107;
+  color: #000;
+  margin-right: 5px;
+}
+
+.btn-delete {
+  background: #dc3545;
+  color: white;
+}
+
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.tabla th {
+  background: #343a40;
+  color: white;
+  padding: 10px;
+}
+
+.tabla td {
+  background: #f8f9fa;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Badges de estado */
+.badge {
+  padding: 5px 10px;
+  border-radius: 12px;
+  color: white;
+  font-size: 13px;
+}
+
+.pendiente {
+  background: #ff9800;
+}
+
+.preparando {
+  background: #2196f3;
+}
+
+.servido {
+  background: #4caf50;
+}
+
+.pagado {
+  background: #6f42c1;
+}
+
+/* Modal */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.65);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  width: 380px;
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+}

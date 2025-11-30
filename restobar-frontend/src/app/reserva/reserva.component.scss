@@ -1,0 +1,120 @@
+.titulo {
+  font-size: 26px;
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+
+.btn-nuevo {
+  background: #28a745;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+
+  &:hover {
+    background: #218838;
+  }
+}
+
+.tabla {
+  width: 100%;
+  margin-top: 15px;
+  border-collapse: collapse;
+
+  th {
+    background: #222;
+    color: white;
+    padding: 10px;
+  }
+
+  td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .btn-editar {
+    background: #ffc107;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-right: 5px;
+
+    &:hover {
+      background: #e0a800;
+    }
+  }
+
+  .btn-eliminar {
+    background: #dc3545;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+
+    &:hover {
+      background: #b52d38;
+    }
+  }
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .modal-content {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    input, select {
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid #bbb;
+    }
+
+    .btns {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+
+      .btn-guardar {
+        background: #007bff;
+        padding: 8px 14px;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+
+        &:hover {
+          background: #005ecb;
+        }
+      }
+
+      .btn-cancelar {
+        background: #6c757d;
+        padding: 8px 14px;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+
+        &:hover {
+          background: #565e64;
+        }
+      }
+    }
+  }
+}

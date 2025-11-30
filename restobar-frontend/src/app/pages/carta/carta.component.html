@@ -1,0 +1,61 @@
+<!-- NAVBAR -->
+<header class="navbar">
+    <div class="logo">
+        <img src="logo/logo.jpeg" alt="Kronos Logo">
+    </div>
+
+    <nav class="menu">
+        <a routerLink="/">Inicio</a>
+        <a routerLink="/promosweb">Promociones</a>
+        <a routerLink="/reservaweb">Reserva</a>
+        <a routerLink="/carta" class="active">Carta</a>
+
+        <a routerLink="/carrito" class="cart-icon">
+            <i class="fa-solid fa-basket-shopping"></i>
+            <span class="cart-count" *ngIf="carritoService.obtenerCantidad() > 0">
+                {{ carritoService.obtenerCantidad() }}
+            </span>
+        </a>
+
+        <span *ngIf="usuario" style="display: flex; align-items: center; gap: 10px;">
+            <span style="color: #fff;">Hola, {{ usuario.nombreCompleto }}</span>
+            <a (click)="cerrarSesion()" style="cursor: pointer;" title="Cerrar sesión">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            </a>
+        </span>
+
+        <a *ngIf="!usuario" routerLink="/login"><i class="fa-solid fa-user"></i></a>
+    </nav>
+</header>
+
+<!-- PRODUCTOS -->
+<section class="carta-section">
+    <h2>Nuestra Carta</h2>
+    <p class="subtitle">Descubre nuestros deliciosos platos y bebidas</p>
+
+    <div class="productos-grid" *ngIf="productos.length > 0">
+        <div class="producto-card" *ngFor="let p of productos">
+            <img [src]="p.imagen ? 'http://localhost:8080' + p.imagen : 'assets/placeholder.jpg'" [alt]="p.nombre">
+            <div class="card-content">
+                <h3>{{ p.nombre }}</h3>
+                <p class="descripcion">{{ p.descripcion }}</p>
+                <p class="categoria">{{ p.categoria?.nombreCategoria }}</p>
+                <div class="card-footer">
+                    <p class="precio">S/. {{ p.precio }}</p>
+                    <button class="btn-agregar" (click)="agregarAlCarrito(p)">
+                        <i class="fa-solid fa-plus"></i> Agregar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="productos.length === 0" class="empty">
+        <i class="fa-solid fa-utensils"></i>
+        <p>No hay productos disponibles en este momento</p>
+    </div>
+</section>
+
+<footer>
+    <p>2025 © Todos los derechos reservados - Restobar Kronos</p>
+</footer>

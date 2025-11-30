@@ -1,0 +1,60 @@
+<h2 class="titulo">Gestión de Reservas</h2>
+
+<button class="btn-nuevo" (click)="abrirModal()">+ Nueva Reserva</button>
+
+<hr>
+
+<table class="tabla">
+  <tr>
+    <th>Usuario</th>
+    <th>Mesa</th>
+    <th>Fecha</th>
+    <th>Hora</th>
+    <th>Estado</th>
+    <th>Acciones</th>
+  </tr>
+
+  <tr *ngFor="let r of reservas">
+    <td>{{ r.usuario?.nombreCompleto }}</td>
+    <td>{{ r.mesa?.numero_mesa }}</td>
+    <td>{{ r.fecha }}</td>
+<td>{{ r.hora?.substring(0, 5) }}</td>
+
+    <td>{{ r.estado }}</td>
+
+    <td>
+      <button class="btn-editar" (click)="editar(r)">Editar</button>
+      <button class="btn-eliminar" (click)="eliminar(r.id_reserva)">Eliminar</button>
+    </td>
+  </tr>
+</table>
+
+
+<div class="modal" *ngIf="modalVisible">
+  <div class="modal-content">
+
+    <h3>{{ editando ? "Editar Reserva" : "Nueva Reserva" }}</h3>
+
+    <!-- Selección de usuario -->
+    <input type="number" placeholder="ID Usuario" [(ngModel)]="reserva.usuario.idUsuario">
+
+    <!-- Selección de mesa -->
+    <input type="number" placeholder="ID Mesa" [(ngModel)]="reserva.mesa.id_mesa">
+
+    <input type="date" [(ngModel)]="reserva.fecha">
+    <input type="time" [(ngModel)]="reserva.hora">
+
+    <select [(ngModel)]="reserva.estado">
+      <option *ngFor="let e of estados" [value]="e">{{ e }}</option>
+    </select>
+
+    <div class="btns">
+      <button class="btn-guardar" (click)="guardar()">
+        {{ editando ? "Actualizar" : "Guardar" }}
+      </button>
+
+      <button class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+    </div>
+
+  </div>
+</div>

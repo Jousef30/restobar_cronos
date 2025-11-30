@@ -1,0 +1,14 @@
+# Angular
+restobar-frontend/node_modules/
+restobar-frontend/dist/
+
+# Spring Boot
+demo/target/
+*.log
+
+# Uploads
+uploads/
+
+# IDE
+.vscode/
+

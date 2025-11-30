@@ -1,0 +1,37 @@
+<h2 class="titulo">Gestión de Categorías</h2>
+
+<!-- CREAR -->
+<div class="crear-box">
+  <input type="text" placeholder="Nueva categoría" [(ngModel)]="nombre">
+  <button class="btn-agregar" (click)="guardar()">Agregar</button>
+</div>
+
+<!-- LISTAR -->
+<table class="tabla">
+  <tr>
+    <th>Nombre</th>
+    <th>Acciones</th>
+  </tr>
+
+  <tr *ngFor="let c of categorias">
+    <td>{{ c.nombre }}</td>
+    <td>
+      <button class="btn-editar" (click)="abrirModal(c)">Editar</button>
+      <button class="btn-eliminar" (click)="eliminar(c.id_categoria)">Eliminar</button>
+    </td>
+  </tr>
+</table>
+
+<!-- MODAL -->
+<div class="modal" *ngIf="editMode">
+  <div class="modal-content">
+    <h3>Editar Categoría</h3>
+
+    <input type="text" [(ngModel)]="nombreEdit">
+
+    <div class="btns">
+      <button class="btn-guardar" (click)="actualizar()">Guardar</button>
+      <button class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
