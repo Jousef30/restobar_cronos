@@ -1,17 +1,33 @@
-# Usar una imagen base de OpenJDK
-FROM openjdk:17-jdk-slim as build
+# Etapa 1: Build
+FROM eclipse-temurin:17-jdk-alpine AS build
 
-# Directorio de trabajo
 WORKDIR /app
 
-# Copiar los archivos del proyecto al contenedor
-COPY . .
+# Copiar archivos de Maven
+COPY pom.xml .
+COPY mvnw .
+COPY .mvn .mvn
 
-# Asegurarse de que el script mvnw tiene permisos de ejecución
+# Descargar dependencias
 RUN chmod +x mvnw
+RUN ./mvnw dependency:go-offline
 
-# Construir el proyecto con Maven (asegurarse de que el archivo pom.xml esté presente)
-RUN ./mvnw clean install
+# Copiar código fuente
+COPY src src
 
-# Ejecutar el archivo JAR
-CMD ["java", "-jar", "target/demo-0.0.1-SNAPSHOT.jar"]
+# Compilar proyecto (sin tests para más rápido)
+RUN ./mvnw clean package -DskipTests
+
+# Etapa 2: Runtime
+FROM eclipse-temurin:17-jre-alpine
+
+WORKDIR /app
+
+# Copiar JAR desde etapa build
+COPY --from=build /app/target/*.jar app.jar
+
+# Exponer puerto
+EXPOSE 8080
+
+# Ejecutar aplicación
+ENTRYPOINT ["java", "-jar", "app.jar"]
