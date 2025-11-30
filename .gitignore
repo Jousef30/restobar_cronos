@@ -1,0 +1,36 @@
+﻿# ============================
+# IGNORAR FRONTEND ANGULAR
+# ============================
+restobar-frontend/node_modules/
+restobar-frontend/dist/
+restobar-frontend/.angular/
+restobar-frontend/.vscode/
+
+# ============================
+# IGNORAR BACKEND SPRING BOOT
+# ============================
+demo/target/
+demo/*.log
+demo/*.jar
+demo/*.war
+
+# ============================
+# CONFIGURACIONES / CREDENCIALES
+# ============================
+demo/src/main/resources/application.properties
+.env
+.env.*
+*.pem
+*.p12
+
+# ============================
+# ARCHIVOS DEL SISTEMA
+# ============================
+.DS_Store
+Thumbs.db
+
+# ============================
+# LOGS
+# ============================
+*.log
+
