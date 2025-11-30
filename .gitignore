@@ -1,36 +1,79 @@
-﻿# ============================
-# IGNORAR FRONTEND ANGULAR
-# ============================
+@'
+# Java / Maven
+target/
+*.class
+*.war
+*.jar
+.mvn/
+!.mvn/wrapper/maven-wrapper.jar
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Node / frontend
+node_modules/
+dist/
+build/
+
+# Environment / secrets
+.env
+*.env
+secret-*.properties
+application-*.properties
+
+# Uploads / user files
+uploads/
+productos/
+promociones/
+
+# Maven local repo artifacts sometimes committed by mistake
+/target/
+
+# Others
+npm-debug.log
+yarn-error.log
+'@ | Set-Content -Path .gitignore -Encoding UTF8
+# Crear .gitignore nuevo en la raíz con contenido recomendado
+@"
+# Node / Angular
 restobar-frontend/node_modules/
 restobar-frontend/dist/
 restobar-frontend/.angular/
 restobar-frontend/.vscode/
 
-# ============================
-# IGNORAR BACKEND SPRING BOOT
-# ============================
+# Java / Spring Boot
 demo/target/
 demo/*.log
 demo/*.jar
 demo/*.war
 
-# ============================
-# CONFIGURACIONES / CREDENCIALES
-# ============================
+# Environment / credentials
 demo/src/main/resources/application.properties
 .env
 .env.*
 *.pem
 *.p12
 
-# ============================
-# ARCHIVOS DEL SISTEMA
-# ============================
+# OS
 .DS_Store
 Thumbs.db
 
-# ============================
-# LOGS
-# ============================
+# Logs
 *.log
+"@ | Out-File -FilePath .\.gitignore -Encoding utf8
 

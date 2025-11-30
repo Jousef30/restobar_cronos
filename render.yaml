@@ -1,0 +1,32 @@
+services:
+  # Backend Spring Boot
+  - type: web
+    name: restobar-cronos-backend
+    runtime: docker
+    dockerfilePath: ./demo/Dockerfile
+    dockerContext: ./demo
+    region: oregon
+    plan: free
+    branch: main
+    healthCheckPath: /api/auth/login
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: DATABASE_URL
+        sync: false  # Configurar manualmente en el dashboard
+      - key: DB_USERNAME
+        sync: false  # Configurar manualmente
+      - key: DB_PASSWORD
+        sync: false  # Configurar manualmente
+      - key: JWT_SECRET
+        generateValue: true  # Render generará un valor aleatorio
+      - key: MERCADOPAGO_ACCESS_TOKEN
+        sync: false  # Configurar manualmente si se usa
+      - key: MAIL_HOST
+        value: smtp.gmail.com
+      - key: MAIL_PORT
+        value: 587
+      - key: MAIL_USERNAME
+        sync: false  # Configurar manualmente
+      - key: MAIL_PASSWORD
+        sync: false  # Configurar manualmente
