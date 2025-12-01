@@ -1,0 +1,10 @@
+{
+    "buildOptimizer": false,
+    "outputPath": "dist/restobar-frontend",
+    "rewrites": [
+        {
+            "source": "/(.*)",
+            "destination": "/index.html"
+        }
+    ]
+}
