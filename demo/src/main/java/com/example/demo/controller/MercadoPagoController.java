@@ -24,178 +24,66 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.Optional;
+import java.util.Optional;private UsuarioRepository usuarioRepository;
 
-@RestController
-@RequestMapping("/api/pagos")
-@CrossOrigin(origins = "http://localhost:4200")
-public class MercadoPagoController {
+@Autowired private MesaRepository mesaRepository;
 
-    @Value("${mercadopago.access.token}")
-    private String accessToken;
+// Crear la solicitud de pago
+PaymentCreateRequest paymentRequest=PaymentCreateRequest.builder().transactionAmount(BigDecimal.valueOf(request.getTransactionAmount())).token(request.getToken()).description("Pedido Restobar Kronos").installments(1).paymentMethodId(request.getPaymentMethodId()).payer(payerRequest).build();
 
-    @Autowired
-    private PedidoRepository pedidoRepository;
+// Procesar el pago con Mercado Pago
+Payment payment=client.create(paymentRequest);
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+System.out.println("✅ Pago procesado con ID: "+payment.getId());System.out.println("Estado: "+payment.getStatus());System.out.println("Status Detail: "+payment.getStatusDetail());
 
-    @Autowired
-    private MesaRepository mesaRepository;
+// Crear el pedido en la base de datos
+Pedido pedido=crearPedido(request,payment.getStatus());
 
-    @Autowired
-    private ProductoRepository productoRepository;
+// Preparar la respuesta
+PagoResponse response=new PagoResponse();response.setIdPagoMP(payment.getId());response.setEstado(payment.getStatus());response.setStatusDetail(payment.getStatusDetail());response.setIdPedido(pedido.getId_pedido());
 
-    @Autowired
-    private DetallepedidoRepository detallepedidoRepository;
+if("approved".equals(payment.getStatus())){response.setMensaje("Pago aprobado exitosamente");System.out.println("✅ PAGO APROBADO - Pedido #"+pedido.getId_pedido());}else if("rejected".equals(payment.getStatus())){response.setMensaje("Pago rechazado: "+payment.getStatusDetail());System.out.println("❌ PAGO RECHAZADO: "+payment.getStatusDetail());}else{response.setMensaje("Pago pendiente");System.out.println("⏳ PAGO PENDIENTE");}
 
-    @PostMapping("/procesar")
-    public ResponseEntity<PagoResponse> procesarPago(@RequestBody PagoRequest request) {
-        System.out.println("=== PROCESANDO PAGO CON MERCADO PAGO ===");
-        System.out.println("Token recibido: " + request.getToken());
-        System.out.println("Monto: " + request.getTransactionAmount());
-        System.out.println("Payment Method ID: " + request.getPaymentMethodId());
+return ResponseEntity.ok(response);
 
-        try {
-            // Configurar Mercado Pago con el Access Token
-            System.out.println("Access Token configurado: "
-                    + (accessToken != null ? accessToken.substring(0, 20) + "..." : "NULL"));
-            MercadoPagoConfig.setAccessToken(accessToken);
+}catch(com.mercadopago.exceptions.MPApiException apiEx){System.err.println("❌ ERROR DE API MERCADO PAGO:");System.err.println("Status Code: "+apiEx.getStatusCode());System.err.println("Message: "+apiEx.getMessage());System.err.println("API Response: "+apiEx.getApiResponse());apiEx.printStackTrace();
 
-            // Crear el cliente de pagos
-            PaymentClient client = new PaymentClient();
+PagoResponse errorResponse=new PagoResponse();errorResponse.setEstado("error");errorResponse.setMensaje("Error de Mercado Pago: "+apiEx.getMessage()+" (Status: "+apiEx.getStatusCode()+")");
 
-            // Preparar la información del pagador
-            PaymentPayerRequest payerRequest = PaymentPayerRequest.builder()
-                    .email((String) request.getPayer().get("email"))
-                    .build();
+return ResponseEntity.status(500).body(errorResponse);
 
-            // Crear la solicitud de pago
-            PaymentCreateRequest paymentRequest = PaymentCreateRequest.builder()
-                    .transactionAmount(BigDecimal.valueOf(request.getTransactionAmount()))
-                    .token(request.getToken())
-                    .description("Pedido Restobar Kronos")
-                    .installments(1)
-                    .paymentMethodId(request.getPaymentMethodId())
-                    .payer(payerRequest)
-                    .build();
+}catch(Exception e){System.err.println("❌ ERROR AL PROCESAR PAGO: "+e.getMessage());e.printStackTrace();
 
-            // Procesar el pago con Mercado Pago
-            Payment payment = client.create(paymentRequest);
+PagoResponse errorResponse=new PagoResponse();errorResponse.setEstado("error");errorResponse.setMensaje("Error al procesar el pago: "+e.getMessage());
 
-            System.out.println("✅ Pago procesado con ID: " + payment.getId());
-            System.out.println("Estado: " + payment.getStatus());
-            System.out.println("Status Detail: " + payment.getStatusDetail());
+return ResponseEntity.status(500).body(errorResponse);}}
 
-            // Crear el pedido en la base de datos
-            Pedido pedido = crearPedido(request, payment.getStatus());
+private Pedido crearPedido(PagoRequest request,String estadoPago){Pedido pedido=new Pedido();
 
-            // Preparar la respuesta
-            PagoResponse response = new PagoResponse();
-            response.setIdPagoMP(payment.getId());
-            response.setEstado(payment.getStatus());
-            response.setStatusDetail(payment.getStatusDetail());
-            response.setIdPedido(pedido.getId_pedido());
+// Asignar usuario si está logueado, sino usar usuario genérico
+if(request.getIdUsuario()!=null){Optional<Usuario>usuario=usuarioRepository.findById(request.getIdUsuario());usuario.ifPresent(pedido::setUsuario);}else{
+// Crear o buscar usuario "Invitado" para pedidos sin login
+Optional<Usuario>invitado=usuarioRepository.findByEmail("invitado@restobar.com");if(invitado.isPresent()){pedido.setUsuario(invitado.get());}else{
+// Si no existe, usar el primer usuario (ajustar según tu lógica)
+Usuario primeraUsuario=usuarioRepository.findAll().get(0);pedido.setUsuario(primeraUsuario);}}
 
-            if ("approved".equals(payment.getStatus())) {
-                response.setMensaje("Pago aprobado exitosamente");
-                System.out.println("✅ PAGO APROBADO - Pedido #" + pedido.getId_pedido());
-            } else if ("rejected".equals(payment.getStatus())) {
-                response.setMensaje("Pago rechazado: " + payment.getStatusDetail());
-                System.out.println("❌ PAGO RECHAZADO: " + payment.getStatusDetail());
-            } else {
-                response.setMensaje("Pago pendiente");
-                System.out.println("⏳ PAGO PENDIENTE");
-            }
+// Asignar mesa "WEB" para pedidos online
+Optional<Mesa>mesaWeb=mesaRepository.findById(1L);mesaWeb.ifPresent(pedido::setMesa);
 
-            return ResponseEntity.ok(response);
+// Asignar fecha y total
+pedido.setFecha(new Timestamp(System.currentTimeMillis()));pedido.setTotal(request.getTransactionAmount());
 
-        } catch (com.mercadopago.exceptions.MPApiException apiEx) {
-            System.err.println("❌ ERROR DE API MERCADO PAGO:");
-            System.err.println("Status Code: " + apiEx.getStatusCode());
-            System.err.println("Message: " + apiEx.getMessage());
-            System.err.println("API Response: " + apiEx.getApiResponse());
-            apiEx.printStackTrace();
+// Asignar estado según el resultado del pago
+if("approved".equals(estadoPago)){pedido.setEstado(Pedido.Estado.PAGADO);}else if("rejected".equals(estadoPago)){pedido.setEstado(Pedido.Estado.PENDIENTE);}else{pedido.setEstado(Pedido.Estado.PENDIENTE);}
 
-            PagoResponse errorResponse = new PagoResponse();
-            errorResponse.setEstado("error");
-            errorResponse.setMensaje(
-                    "Error de Mercado Pago: " + apiEx.getMessage() + " (Status: " + apiEx.getStatusCode() + ")");
+// Guardar pedido en la base de datos
+Pedido pedidoGuardado=pedidoRepository.save(pedido);System.out.println("💾 Pedido guardado con ID: "+pedidoGuardado.getId_pedido());
 
-            return ResponseEntity.status(500).body(errorResponse);
+// NUEVO: Guardar los detalles del pedido (productos individuales)
+if(request.getItems()!=null&&!request.getItems().isEmpty()){for(PagoRequest.ItemCarrito item:request.getItems()){Optional<Producto>productoOpt=productoRepository.findById(item.getId_producto());
 
-        } catch (Exception e) {
-            System.err.println("❌ ERROR AL PROCESAR PAGO: " + e.getMessage());
-            e.printStackTrace();
+if(productoOpt.isPresent()){Detallepedido detalle=new Detallepedido();detalle.setPedido(pedidoGuardado);detalle.setProducto(productoOpt.get());detalle.setCantidad(item.getCantidad());detalle.setPrecio(item.getPrecio());
 
-            PagoResponse errorResponse = new PagoResponse();
-            errorResponse.setEstado("error");
-            errorResponse.setMensaje("Error al procesar el pago: " + e.getMessage());
+detallepedidoRepository.save(detalle);System.out.println("   ✅ Detalle guardado: "+item.getNombre()+" x"+item.getCantidad());}else{System.err.println("   ⚠️ Producto no encontrado: ID "+item.getId_producto());}}}
 
-            return ResponseEntity.status(500).body(errorResponse);
-        }
-    }
-
-    private Pedido crearPedido(PagoRequest request, String estadoPago) {
-        Pedido pedido = new Pedido();
-
-        // Asignar usuario si está logueado, sino usar usuario genérico
-        if (request.getIdUsuario() != null) {
-            Optional<Usuario> usuario = usuarioRepository.findById(request.getIdUsuario());
-            usuario.ifPresent(pedido::setUsuario);
-        } else {
-            // Crear o buscar usuario "Invitado" para pedidos sin login
-            Optional<Usuario> invitado = usuarioRepository.findByEmail("invitado@restobar.com");
-            if (invitado.isPresent()) {
-                pedido.setUsuario(invitado.get());
-            } else {
-                // Si no existe, usar el primer usuario (ajustar según tu lógica)
-                Usuario primeraUsuario = usuarioRepository.findAll().get(0);
-                pedido.setUsuario(primeraUsuario);
-            }
-        }
-
-        // Asignar mesa "WEB" para pedidos online
-        Optional<Mesa> mesaWeb = mesaRepository.findById(1L);
-        mesaWeb.ifPresent(pedido::setMesa);
-
-        // Asignar fecha y total
-        pedido.setFecha(new Timestamp(System.currentTimeMillis()));
-        pedido.setTotal(request.getTransactionAmount());
-
-        // Asignar estado según el resultado del pago
-        if ("approved".equals(estadoPago)) {
-            pedido.setEstado(Pedido.Estado.PAGADO);
-        } else if ("rejected".equals(estadoPago)) {
-            pedido.setEstado(Pedido.Estado.PENDIENTE);
-        } else {
-            pedido.setEstado(Pedido.Estado.PENDIENTE);
-        }
-
-        // Guardar pedido en la base de datos
-        Pedido pedidoGuardado = pedidoRepository.save(pedido);
-        System.out.println("💾 Pedido guardado con ID: " + pedidoGuardado.getId_pedido());
-
-        // NUEVO: Guardar los detalles del pedido (productos individuales)
-        if (request.getItems() != null && !request.getItems().isEmpty()) {
-            for (PagoRequest.ItemCarrito item : request.getItems()) {
-                Optional<Producto> productoOpt = productoRepository.findById(item.getId_producto());
-
-                if (productoOpt.isPresent()) {
-                    Detallepedido detalle = new Detallepedido();
-                    detalle.setPedido(pedidoGuardado);
-                    detalle.setProducto(productoOpt.get());
-                    detalle.setCantidad(item.getCantidad());
-                    detalle.setPrecio(item.getPrecio());
-
-                    detallepedidoRepository.save(detalle);
-                    System.out.println("   ✅ Detalle guardado: " + item.getNombre() + " x" + item.getCantidad());
-                } else {
-                    System.err.println("   ⚠️ Producto no encontrado: ID " + item.getId_producto());
-                }
-            }
-        }
-
-        return pedidoGuardado;
-    }
-}
+return pedidoGuardado;}}
