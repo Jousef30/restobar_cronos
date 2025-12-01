@@ -31,19 +31,6 @@ public class CorsConfig {
                 // Ejemplos de dominios del frontend:
                 // - http://localhost:4200 (desarrollo local) ✅ YA CONFIGURADO
                 // - https://restobar-frontend.vercel.app (si usas Vercel)
-                // - https://restobar-frontend.onrender.com (si usas Render)
-                // - https://tu-dominio-personalizado.com (si tienes dominio propio)
-
-                configuration.setAllowedOrigins(Arrays.asList(
-                                "http://localhost:4200", // ✅ Para desarrollo local
-                                "http://localhost:4201", // ✅ Por si usas otro puerto
-                                "https://localhost:4200" // ✅ HTTPS local
-                // Agrega aquí el dominio de tu frontend cuando lo despliegues:
-                // "https://restobar-frontend.vercel.app",
-                // "https://restobar-frontend.onrender.com",
-                ));
-
-                // Permitir credenciales (cookies, headers de autorización)
                 configuration.setAllowCredentials(true);
 
                 // Permitir todos los headers comunes
